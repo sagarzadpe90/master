@@ -44,7 +44,7 @@ def run_process(rootDirectoryToProcess,modifiedAfterDateTime,bucketName,targetRe
     #out=open(fileName,"a")
     resList=file_finder(rootDirectoryToProcess)
     hostname=socket.gethostname()
-    with open(fileName, "a") as my_file:
+    with open(os.path.join(basePath,fileName),"a") as my_file:
         for fullFilePath in resList:
             fileLastModifiedDateTime=get_file_dt(fullFilePath)
             res=compare_dt(modifiedAfterDateTime,fileLastModifiedDateTime)
@@ -80,11 +80,12 @@ def run_process(rootDirectoryToProcess,modifiedAfterDateTime,bucketName,targetRe
 
 if __name__ == "__main__":
     #inputs
-    rootDirectoryToProcess='C:\\Users\\sagar\\hackerRank\\input'
+    basePath=os.getcwd()
+    rootDirectoryToProcess=os.path.join(basePath,'Data/input')
     modifiedAfterDateTime="2012-01-31T08:59-7:00"
     bucketName='S3'
-    targetRelativeKeyPath='C:\\Users\\sagar\\hackerRank\\output'
-    bucketRootDirectory='C:\\Users\\sagar\\hackerRank\\input'
+    targetRelativeKeyPath=os.path.join(basePath,'Data/output')
+    bucketRootDirectory='/bucket_directory'
     #call funtion
     run_process(rootDirectoryToProcess,modifiedAfterDateTime,bucketName,targetRelativeKeyPath,bucketRootDirectory)
 
