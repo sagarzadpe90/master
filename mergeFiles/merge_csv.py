@@ -53,14 +53,14 @@ def merge_csv_excel(rootDirectoryToProcess,excelFileName,deleteCsvFilesFlag):
         return 1
 
 if __name__ == "__main__":
-    # print(sys.argv[1])    
-    # print(sys.argv[2]) 
-    # print(sys.argv[3]) 
-    rootDirectoryToProcess="C:\\Users\sagar\hackerRank\mergeFiles\input"#sys.argv[1]
-    excelFileName= "output"#sys.argv[2]
-    deleteCsvFilesFlag= "No"#sys.argv[3]
+    print(sys.argv[1])    
+    print(sys.argv[2]) 
+    print(sys.argv[3]) 
+    rootDirectoryToProcess=sys.argv[1]
+    excelFileName= sys.argv[2]
+    deleteCsvFilesFlag= sys.argv[3]
     ret=merge_csv_excel(rootDirectoryToProcess,excelFileName,deleteCsvFilesFlag="Yes")
-    # if ret ==1:
-    #     print('merging is failed')
-    # else:
-    #     print("merging is succssful")
+    if ret ==1:
+        print('merging is failed')
+    else:
+        print("merging is succssful")
