@@ -1,3 +1,4 @@
+
 import os
 from glob import glob
 from datetime import datetime
@@ -5,6 +6,7 @@ import socket
 import hashlib
 import base64
 import shutil
+import sys
 # To find files in directory
 def file_finder(rootDirectoryToProcess):
     resList = [y for x in os.walk(rootDirectoryToProcess) for y in glob(os.path.join(x[0], '*.*'))]
@@ -40,11 +42,13 @@ def copyFileDir(fileName,source,dest):
     return 0
 
 def run_process(rootDirectoryToProcess,modifiedAfterDateTime,bucketName,targetRelativeKeyPath,bucketRootDirectory):
-    fileName=datetime.now().strftime("D--files-examples_%H_%M_%d_%m_%Y.out")
+    currentMin=int(datetime.now().strftime("%M"))
+    fileName="D--files-examples_"+ datetime.now().astimezone().strftime("%Z_%Y.%m.%d__H%H--")+ str(currentMin).zfill(2)+".out"
+    print(fileName)
     #out=open(fileName,"a")
     resList=file_finder(rootDirectoryToProcess)
     hostname=socket.gethostname()
-    with open(os.path.join(basePath,fileName),"a") as my_file:
+    with open(os.path.join(targetRelativeKeyPath,fileName),"a") as my_file:
         for fullFilePath in resList:
             fileLastModifiedDateTime=get_file_dt(fullFilePath)
             res=compare_dt(modifiedAfterDateTime,fileLastModifiedDateTime)
@@ -61,7 +65,7 @@ def run_process(rootDirectoryToProcess,modifiedAfterDateTime,bucketName,targetRe
                 msToCopy=endTime1-stTime1  
                 msToCopy=msToCopy.total_seconds() * 1000
                 fileProcessedDateTime= datetime.now()
-                mssg_string= "{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}".format(
+                mssg_string= "{} | {} | {} | {} | {} | {} | {} | {} | {} | {} | {}".format(
                 hostname,
                 rootDirectoryToProcess,
                 modifiedAfterDateTime,
@@ -80,13 +84,29 @@ def run_process(rootDirectoryToProcess,modifiedAfterDateTime,bucketName,targetRe
 
 if __name__ == "__main__":
     #inputs
-    basePath=os.getcwd()
-    rootDirectoryToProcess=os.path.join(basePath,'Data/input')
-    modifiedAfterDateTime="2012-01-31T08:59-7:00"
-    bucketName='S3'
-    targetRelativeKeyPath=os.path.join(basePath,'Data/output')
-    bucketRootDirectory='/bucket_directory'
-    #call funtion
-    run_process(rootDirectoryToProcess,modifiedAfterDateTime,bucketName,targetRelativeKeyPath,bucketRootDirectory)
+    if len(sys.argv) == 6:
+        rootDirectoryToProcess=sys.argv[1]
+        modifiedAfterDateTime=sys.argv[2]
+        bucketName=sys.argv[3]
+        targetRelativeKeyPath=sys.argv[4]
+        bucketRootDirectory=sys.argv[5]    
+        print("rootDirectoryToProcess: {}".format(rootDirectoryToProcess))
+        print("modifiedAfterDateTime: {}".format(modifiedAfterDateTime))
+        print("bucketName: {}".format(bucketName))
+        print("targetRelativeKeyPath: {}".format(targetRelativeKeyPath))
+        print("bucketRootDirectory: {}".format(bucketRootDirectory))    
+        basePath=os.getcwd()
+        #call funtion
+        run_process(rootDirectoryToProcess,modifiedAfterDateTime,bucketName,targetRelativeKeyPath,bucketRootDirectory)
+    else:
+        print("Please provide correct inputs \n Example: \n python checksum.py rootDirectoryToProcess modifiedAfterDateTime bucketName targetRelativeKeyPath bucketRootDirectory")
+        print("Inputs->")
+        print("rootDirectoryToProcess: root directory Files to search")
+        print("modifiedAfterDateTime: Provide date format ('%Y-%m-%dT%H:%M-%S:%f') eg- 2012-01-31T08:59-7:00")
+        print("bucketName: Provide correct S3 bucket")
+        print("targetRelativeKeyPath: Provide target path ")
+        print("bucketRootDirectory: provide root directory name")  
+                
+        
 
 
